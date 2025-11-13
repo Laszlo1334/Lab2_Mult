@@ -6,6 +6,9 @@ A simple media player using Tkinter and VLC
 import tkinter as tk
 from tkinter import Menu, Scale, Label, Button, Frame
 from tkinter import filedialog, simpledialog, messagebox
+import vlc
+import sys
+import platform
 
 
 class MediaPlayer:
@@ -17,12 +20,23 @@ class MediaPlayer:
         self.root.title("Media Player")
         self.root.geometry("800x600")
         
+        # Initialize VLC instance and player
+        self.instance = vlc.Instance()
+        self.player = self.instance.media_player_new()
+        
+        # Media state variables
+        self.is_playing = False
+        self.current_media = None
+        
         # Create menu bar
         self.create_menu()
         
         # Create video frame (placeholder for video display)
         self.video_frame = Frame(self.root, bg="black", width=800, height=450)
         self.video_frame.pack(fill=tk.BOTH, expand=True)
+        
+        # Bind video output to the frame
+        self.setup_video_output()
         
         # Create control panel
         self.create_controls()
@@ -39,6 +53,16 @@ class MediaPlayer:
         file_menu.add_command(label="Open Stream...", command=self.open_stream)
         file_menu.add_separator()
         file_menu.add_command(label="Exit", command=self.root.quit)
+        
+    def setup_video_output(self):
+        """Set up the video output to display in the Tkinter frame"""
+        # Get window ID for embedding video
+        if platform.system() == "Windows":
+            self.player.set_hwnd(self.video_frame.winfo_id())
+        elif platform.system() == "Darwin":  # macOS
+            self.player.set_nsobject(self.video_frame.winfo_id())
+        else:  # Linux
+            self.player.set_xwindow(self.video_frame.winfo_id())
         
     def create_controls(self):
         """Create control buttons, slider, and time labels"""
@@ -111,8 +135,36 @@ class MediaPlayer:
         
     def open_file(self):
         """Open file dialog to select a media file"""
-        # Placeholder - will be implemented in Step 2
-        messagebox.showinfo("Not Implemented", "File opening will be implemented in Step 2")
+        file_path = filedialog.askopenfilename(
+            title="Select Media File",
+            filetypes=[
+                ("All Media Files", "*.mp3 *.mp4 *.avi *.mkv *.wav *.flac *.mov"),
+                ("Audio Files", "*.mp3 *.wav *.flac"),
+                ("Video Files", "*.mp4 *.avi *.mkv *.mov"),
+                ("All Files", "*.*")
+            ]
+        )
+        
+        if file_path:
+            self.load_media(file_path)
+            
+    def load_media(self, source):
+        """Load media from file path or URL"""
+        try:
+            # Create media object
+            self.current_media = self.instance.media_new(source)
+            self.player.set_media(self.current_media)
+            
+            # Reset UI state
+            self.is_playing = False
+            self.play_pause_button.config(text="▶ Play")
+            self.current_time_label.config(text="00:00")
+            self.total_time_label.config(text="00:00")
+            self.progress_slider.set(0)
+            
+            messagebox.showinfo("Success", f"Media loaded successfully!")
+        except Exception as e:
+            messagebox.showerror("Error", f"Failed to load media: {str(e)}")
         
     def open_stream(self):
         """Open dialog to input stream URL"""
