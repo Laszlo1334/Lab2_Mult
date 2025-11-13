@@ -173,23 +173,53 @@ class MediaPlayer:
         
     def toggle_play_pause(self):
         """Toggle between play and pause"""
-        # Placeholder - will be implemented in Step 3
-        pass
+        if not self.current_media:
+            messagebox.showwarning("No Media", "Please load a media file first")
+            return
+            
+        if self.is_playing:
+            # Pause playback
+            self.player.pause()
+            self.is_playing = False
+            self.play_pause_button.config(text="▶ Play")
+        else:
+            # Start or resume playback
+            self.player.play()
+            self.is_playing = True
+            self.play_pause_button.config(text="⏸ Pause")
         
     def stop_playback(self):
         """Stop playback and reset to beginning"""
-        # Placeholder - will be implemented in Step 3
-        pass
+        if self.player:
+            self.player.stop()
+            self.is_playing = False
+            self.play_pause_button.config(text="▶ Play")
+            self.current_time_label.config(text="00:00")
+            self.progress_slider.set(0)
         
     def skip_backward(self):
         """Skip backward 10 seconds"""
-        # Placeholder - will be implemented in Step 3
-        pass
+        if not self.current_media:
+            return
+            
+        current_time = self.player.get_time()
+        if current_time > 0:
+            # Go back 10 seconds (10000 milliseconds)
+            new_time = max(0, current_time - 10000)
+            self.player.set_time(new_time)
         
     def skip_forward(self):
         """Skip forward 10 seconds"""
-        # Placeholder - will be implemented in Step 3
-        pass
+        if not self.current_media:
+            return
+            
+        current_time = self.player.get_time()
+        duration = self.player.get_length()
+        
+        if duration > 0 and current_time < duration:
+            # Go forward 10 seconds (10000 milliseconds)
+            new_time = min(duration, current_time + 10000)
+            self.player.set_time(new_time)
         
     def on_slider_change(self, value):
         """Handle slider position change by user"""
