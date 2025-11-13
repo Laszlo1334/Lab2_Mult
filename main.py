@@ -176,8 +176,14 @@ class MediaPlayer:
         
     def open_stream(self):
         """Open dialog to input stream URL"""
-        # Placeholder - will be implemented in Step 5
-        messagebox.showinfo("Not Implemented", "Stream opening will be implemented in Step 5")
+        url = simpledialog.askstring(
+            "Open Stream",
+            "Enter the URL of the media stream:",
+            parent=self.root
+        )
+        
+        if url:
+            self.load_media(url)
         
     def toggle_play_pause(self):
         """Toggle between play and pause"""
