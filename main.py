@@ -27,6 +27,7 @@ class MediaPlayer:
         # Media state variables
         self.is_playing = False
         self.current_media = None
+        self.is_slider_being_dragged = False
         
         # Create menu bar
         self.create_menu()
@@ -40,6 +41,9 @@ class MediaPlayer:
         
         # Create control panel
         self.create_controls()
+        
+        # Start periodic UI updates
+        self.update_ui()
         
     def create_menu(self):
         """Create the menu bar with File menu"""
@@ -88,6 +92,10 @@ class MediaPlayer:
             command=self.on_slider_change
         )
         self.progress_slider.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=5)
+        
+        # Bind slider press and release events
+        self.progress_slider.bind("<ButtonPress-1>", self.on_slider_press)
+        self.progress_slider.bind("<ButtonRelease-1>", self.on_slider_release)
         
         # Total time label
         self.total_time_label = Label(time_frame, text="00:00", width=10)
@@ -223,8 +231,55 @@ class MediaPlayer:
         
     def on_slider_change(self, value):
         """Handle slider position change by user"""
-        # Placeholder - will be implemented in Step 4
-        pass
+        # Only seek if user is dragging the slider
+        if self.is_slider_being_dragged and self.current_media:
+            duration = self.player.get_length()
+            if duration > 0:
+                new_time = int((float(value) / 100) * duration)
+                self.player.set_time(new_time)
+                
+    def on_slider_press(self, event):
+        """Handle slider press event"""
+        self.is_slider_being_dragged = True
+        
+    def on_slider_release(self, event):
+        """Handle slider release event"""
+        self.is_slider_being_dragged = False
+        # Update position when slider is released
+        if self.current_media:
+            value = self.progress_slider.get()
+            duration = self.player.get_length()
+            if duration > 0:
+                new_time = int((float(value) / 100) * duration)
+                self.player.set_time(new_time)
+                
+    def format_time(self, milliseconds):
+        """Format time from milliseconds to MM:SS"""
+        if milliseconds < 0:
+            return "00:00"
+        seconds = int(milliseconds / 1000)
+        minutes = seconds // 60
+        seconds = seconds % 60
+        return f"{minutes:02d}:{seconds:02d}"
+        
+    def update_ui(self):
+        """Periodically update the UI (slider and time labels)"""
+        if self.current_media and not self.is_slider_being_dragged:
+            # Get current playback position
+            current_time = self.player.get_time()
+            duration = self.player.get_length()
+            
+            if duration > 0:
+                # Update slider position
+                position = (current_time / duration) * 100
+                self.progress_slider.set(position)
+                
+                # Update time labels
+                self.current_time_label.config(text=self.format_time(current_time))
+                self.total_time_label.config(text=self.format_time(duration))
+        
+        # Schedule next update (every 500ms)
+        self.root.after(500, self.update_ui)
 
 
 def main():
