@@ -20,9 +20,16 @@ class MediaPlayer:
         self.root.title("Media Player")
         self.root.geometry("800x600")
         
-        # Initialize VLC instance and player
-        self.instance = vlc.Instance()
-        self.player = self.instance.media_player_new()
+        try:
+            # Initialize VLC instance and player
+            self.instance = vlc.Instance()
+            self.player = self.instance.media_player_new()
+        except Exception as e:
+            messagebox.showerror(
+                "VLC Error",
+                f"Failed to initialize VLC. Please ensure VLC is installed on your system.\nError: {str(e)}"
+            )
+            sys.exit(1)
         
         # Media state variables
         self.is_playing = False
@@ -161,6 +168,10 @@ class MediaPlayer:
         try:
             # Create media object
             self.current_media = self.instance.media_new(source)
+            
+            if not self.current_media:
+                raise Exception("Failed to create media object")
+                
             self.player.set_media(self.current_media)
             
             # Reset UI state
@@ -170,7 +181,9 @@ class MediaPlayer:
             self.total_time_label.config(text="00:00")
             self.progress_slider.set(0)
             
-            messagebox.showinfo("Success", f"Media loaded successfully!")
+            # Show success message only for files (not streams, to avoid dialog spam)
+            if not source.startswith(('http://', 'https://', 'rtsp://', 'mms://')):
+                messagebox.showinfo("Success", "Media loaded successfully!")
         except Exception as e:
             messagebox.showerror("Error", f"Failed to load media: {str(e)}")
         
@@ -178,12 +191,14 @@ class MediaPlayer:
         """Open dialog to input stream URL"""
         url = simpledialog.askstring(
             "Open Stream",
-            "Enter the URL of the media stream:",
+            "Enter the URL of the media stream:\n(e.g., http://example.com/stream.m3u8)",
             parent=self.root
         )
         
-        if url:
-            self.load_media(url)
+        if url and url.strip():
+            self.load_media(url.strip())
+        elif url is not None:  # User entered empty string
+            messagebox.showwarning("Invalid URL", "Please enter a valid URL")
         
     def toggle_play_pause(self):
         """Toggle between play and pause"""
@@ -270,19 +285,23 @@ class MediaPlayer:
         
     def update_ui(self):
         """Periodically update the UI (slider and time labels)"""
-        if self.current_media and not self.is_slider_being_dragged:
-            # Get current playback position
-            current_time = self.player.get_time()
-            duration = self.player.get_length()
-            
-            if duration > 0:
-                # Update slider position
-                position = (current_time / duration) * 100
-                self.progress_slider.set(position)
+        try:
+            if self.current_media and not self.is_slider_being_dragged:
+                # Get current playback position
+                current_time = self.player.get_time()
+                duration = self.player.get_length()
                 
-                # Update time labels
-                self.current_time_label.config(text=self.format_time(current_time))
-                self.total_time_label.config(text=self.format_time(duration))
+                if duration > 0:
+                    # Update slider position
+                    position = (current_time / duration) * 100
+                    self.progress_slider.set(position)
+                    
+                    # Update time labels
+                    self.current_time_label.config(text=self.format_time(current_time))
+                    self.total_time_label.config(text=self.format_time(duration))
+        except Exception:
+            # Silently handle any errors in UI update to prevent crashes
+            pass
         
         # Schedule next update (every 500ms)
         self.root.after(500, self.update_ui)
