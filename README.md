@@ -1,162 +1,80 @@
-# Desktop Media Player
+# 🎵 Медіаплеєр
 
-A simple desktop media player application built with Python, Tkinter, and VLC. This application supports playing local audio and video files as well as streaming media from URLs.
+Простий десктопний медіаплеєр на Python з графічним інтерфейсом.
 
-## Features
+## Функціонал
 
-- 🎵 **Audio and Video Playback**: Support for various formats (MP3, MP4, AVI, MKV, WAV, FLAC, MOV)
-- 🌐 **Stream Playback**: Play media from URLs (HTTP, HTTPS, RTSP, etc.)
-- ⏯️ **Standard Controls**: Play/Pause, Stop, Forward (10s), Backward (10s)
-- 📊 **Progress Visualization**: Slider showing playback progress
-- ⏱️ **Time Display**: Current and total playback time
-- 🎬 **Video Display**: Embedded video playback window
+- ▶️ Відтворення аудіо (MP3, WAV, OGG, FLAC)
+- 🎬 Відтворення відео (MP4, AVI, MKV, MOV)
+- 🌐 Відтворення потокового медіа за URL
+- ⏯️ Керування: Play/Pause, Stop, Forward (+10s), Backward (-10s)
+- 📊 Повзунок прогресу та відображення часу
+- 📁 Зручне меню для відкриття файлів
 
-## Requirements
+## Вимоги
 
-- Python 3.10 or higher
-- VLC Media Player (must be installed on your system)
-- python-vlc library
+- Python 3.8+
+- VLC media player (встановлюється окремо)
 
-## Installation
+## Встановлення
 
-### 1. Install VLC Media Player
+### 1. Встановіть VLC media player
 
-#### Windows
-Download and install VLC from [https://www.videolan.org/vlc/](https://www.videolan.org/vlc/)
+**Windows:**
+1. Завантажте інсталятор: https://www.videolan.org/vlc/
+2. Запустіть інсталятор і слідуйте інструкціям
+3. Переконайтеся, що VLC встановлено за стандартним шляхом
 
-#### macOS
-```bash
-brew install --cask vlc
-```
+### 2. Встановіть Python залежності
 
-Or download from [https://www.videolan.org/vlc/](https://www.videolan.org/vlc/)
-
-#### Linux (Ubuntu/Debian)
-```bash
-sudo apt-get update
-sudo apt-get install vlc
-```
-
-#### Linux (Fedora)
-```bash
-sudo dnf install vlc
-```
-
-### 2. Install Python Dependencies
-
-Create and activate a virtual environment (recommended):
-
-**Windows (PowerShell):**
-```powershell
-py -m venv .venv
-.\.venv\Scripts\Activate.ps1
-```
-
-**macOS/Linux:**
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-```
-
-Install dependencies:
-```bash
 pip install -r requirements.txt
-```
 
-## Usage
+text
 
-### Running the Application
+## Запуск
 
-```bash
 python main.py
-```
 
-Or on some systems:
-```bash
-python3 main.py
-```
+text
 
-### Using the Player
+## Використання
 
-#### Opening Media Files
-1. Click **File → Open File...** in the menu
-2. Select an audio or video file from your computer
-3. Click the **Play** button to start playback
+### Відкриття файлу
+- **Меню:** `Файл` → `Відкрити файл...`
+- Виберіть аудіо або відеофайл на вашому комп'ютері
 
-#### Playing Streams
-1. Click **File → Open Stream...** in the menu
-2. Enter the URL of the media stream (e.g., `http://example.com/stream.m3u8`)
-3. Click OK to start streaming
+### Відкриття потоку
+- **Меню:** `Файл` → `Відкрити потік...`
+- Введіть URL потоку (наприклад, радіостанція або YouTube stream)
 
-#### Playback Controls
-- **▶ Play / ⏸ Pause**: Toggle between play and pause
-- **⏹ Stop**: Stop playback and reset to the beginning
-- **⏮ Back**: Skip backward 10 seconds
-- **Forward ⏭**: Skip forward 10 seconds
-- **Progress Slider**: Drag to seek to a specific position
-- **Time Display**: Shows current time / total duration
+### Керування відтворенням
+- **▶ Play / ⏸ Pause** — розпочати або призупинити відтворення
+- **⏹ Stop** — повністю зупинити відтворення
+- **⏪ -10s** — перемотати на 10 секунд назад
+- **⏩ +10s** — перемотати на 10 секунд вперед
+- **Повзунок** — перетягніть для швидкого переходу до потрібного моменту
 
-### Supported Formats
+## Підтримувані формати
 
-#### Audio
-- MP3, WAV, FLAC, AAC, OGG, and more
+**Аудіо:**  
+MP3, WAV, OGG, FLAC, AAC
 
-#### Video
-- MP4, AVI, MKV, MOV, WMV, FLV, and more
+**Відео:**  
+MP4, AVI, MKV, MOV, WMV, FLV
 
-#### Streaming Protocols
-- HTTP/HTTPS
-- RTSP
-- MMS
-- And other protocols supported by VLC
+## Вирішення проблем
 
-## Troubleshooting
+### Помилка: "VLC media player не знайдено"
+- Переконайтеся, що VLC встановлено на вашому комп'ютері
+- Windows: Перевірте наявність файлу `C:\Program Files\VideoLAN\VLC\vlc.exe`
+- Після встановлення VLC перезапустіть програму
 
-### "No module named 'tkinter'" Error
-Tkinter is usually included with Python, but if it's missing:
+### Відео не відображається
+- Переконайтеся, що файл не пошкоджений
+- Спробуйте відкрити файл у VLC окремо для перевірки
+- Перевірте, чи підтримується формат файлу
 
-**Linux:**
-```bash
-sudo apt-get install python3-tk
-```
-
-### "Failed to initialize VLC" Error
-Ensure VLC Media Player is properly installed on your system. The python-vlc library requires VLC to be installed.
-
-### Video Not Displaying
-- Make sure the video format is supported by VLC
-- Try playing the file directly in VLC to verify it's not corrupted
-- Check that VLC is properly installed
-
-### Stream Not Working
-- Verify the URL is correct and accessible
-- Check your internet connection
-- Some streams may require specific codecs or protocols
-
-## Development
-
-### Project Structure
-```
-.
-├── main.py              # Main application entry point
-├── requirements.txt     # Python dependencies
-├── README.md           # This file
-├── pyproject.toml      # Project metadata
-└── src/
-    └── lab2_mult/      # Python package (for future extensions)
-```
-
-### Contributing
-Feel free to submit issues and enhancement requests!
-
-## License
-
-See LICENSE file for details.
-
-## Acknowledgments
-
-- Built with [python-vlc](https://pypi.org/project/python-vlc/)
-- Powered by [VLC Media Player](https://www.videolan.org/vlc/)
-- GUI framework: [Tkinter](https://docs.python.org/3/library/tkinter.html)
-
-
+### Програма не запускається
+- Переконайтеся, що віртуальне середовище активоване
+- Перевірте, чи встановлено всі залежності: `pip install -r requirements.txt`
+- Перевірте версію Python: `python --version` (має бути 3.8 або новіше)
